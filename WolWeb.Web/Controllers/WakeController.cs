@@ -35,7 +35,7 @@ namespace WolWeb.Controllers {
                     packet.AddRange(macAddress);
 
                 var client = new UdpClient();
-                client.Connect("192.168.1.255", 7); //the port doesn't matter
+                client.Connect(IPAddress.Broadcast, 7); //the port doesn't matter
                 client.Send(packet.ToArray(), packet.Count);
 
                 return true;
