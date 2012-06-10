@@ -1,12 +1,28 @@
-﻿<header>
+﻿@model WolWeb.ViewModel.PreconfiguredHostsViewModel
+
+<header>
     Wake-on-LAN Web
 </header>
 
 <div id="body">
-    <input type="text" id="macAddress" value="00-1A-4D-9D-74-E4" /> 
-    <input type="text" id="ipAddress" value="MEDIA" />
-    <input type="button" id="wake" value="Wake this machine" />
-    <code id="pingResult"></code>  
+    <div>
+        MAC address: <input type="text" id="macAddress" value="" />
+    </div>
+    <div>
+        IP address / host: <input type="text" id="ipAddress" value="" />
+    </div>
+    <div>
+        Ping result: <code id="pingResult"></code>
+    </div>
+    <div>
+        <input type="button" id="wake" value="Wake this machine" /> 
+    </div>     
+  
+    <ul>
+        @foreach(var host in Model.PreconfiguredHosts) {
+        <li><a href="javascript:loadPreconfiguredHost('@host.IpAddress', '@host.MacAddress');">@host.Name</a></li>
+        }
+    </ul>
 </div>
 
 <footer>
@@ -18,7 +34,6 @@
         $(document).ready(function () {
 
             var pingResultSpan = $("#pingResult");
-            pingResultSpan.html("Pinging ...");
             sendPing();
             $.interval(function () {
                 sendPing();
@@ -35,9 +50,20 @@
         });
 
         function sendPing() {
-            $.getJSON("@Url.Action("Index", "Ping")", { id: $("#ipAddress").val() }, function (result) {
-                $("#pingResult").html(result);
-            });
+            var ipAddress = $("#ipAddress").val();
+
+            if (ipAddress && ipAddress != "") {
+                $.getJSON("@Url.Action("Index", "Ping")", { id: ipAddress }, function (result) {
+                    $("#pingResult").html(result);
+                });
+            }
+        }
+
+        function loadPreconfiguredHost(ipAddress, macAddress) {
+            $("#ipAddress").val(ipAddress);
+            $("#macAddress").val(macAddress);
+
+            sendPing();
         }
     </script>
 }

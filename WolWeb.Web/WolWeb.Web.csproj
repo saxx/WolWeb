@@ -119,6 +119,8 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="ViewModel\PreconfiguredHostsViewModel.cs" />
+    <Content Include="App_Data\Hosts.txt" />
     <Content Include="Content\Normalize.css" />
     <Compile Include="Controllers\WakeController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -154,11 +156,7 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Data\" />
-    <Folder Include="Images\" />
-    <Folder Include="Models\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>

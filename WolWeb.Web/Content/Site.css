@@ -1,4 +1,15 @@
 ﻿html { }
 
-body { font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif; }
+body {
+    font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
+}
+
+header {
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+footer {
+    font-style: italic;
+    margin-top: 20px;
+}
 
