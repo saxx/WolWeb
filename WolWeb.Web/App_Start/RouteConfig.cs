@@ -17,6 +17,18 @@ namespace WolWeb {
                 defaults: new { id = RouteParameter.Optional }
             );
 
+            routes.MapHttpRoute(
+                name: "Ping",
+                routeTemplate: "Ping/{id}",
+                defaults: new { controller = "Ping", action = "Index", id = UrlParameter.Optional }
+            );
+
+            routes.MapHttpRoute(
+                name: "Wake",
+                routeTemplate: "Wake/{id}",
+                defaults: new { controller = "Wake", action = "Index", id = UrlParameter.Optional }
+            );
+
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",

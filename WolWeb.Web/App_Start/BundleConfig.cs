@@ -5,7 +5,8 @@ namespace WolWeb {
     public class BundleConfig {
         public static void RegisterBundles(BundleCollection bundles) {
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
-                        "~/Scripts/jquery-1.*"));
+                        "~/Scripts/jquery-1.*",
+                        "~/Scripts/jquery.timeout.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include(
                         "~/Scripts/jquery-ui*"));
