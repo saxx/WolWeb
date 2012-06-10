@@ -27,7 +27,7 @@
             var wakeButton = $("#wake");
             wakeButton.click(function() {
                 wakeButton.attr("disabled", "disabled");
-                $.getJSON("@Url.Action("Index", "Wake")/" + $("#macAddress").val(), { }, function (result) {
+                $.getJSON("@Url.Action("Index", "Wake")", { id: $("#macAddress").val() }, function (result) {
                     wakeButton.removeAttr("disabled");
                 });
             });
@@ -35,7 +35,7 @@
         });
 
         function sendPing() {
-            $.getJSON("@Url.Action("Index", "Ping")/" + $("#ipAddress").val(), { }, function (result) {
+            $.getJSON("@Url.Action("Index", "Ping")", { id: $("#ipAddress").val() }, function (result) {
                 $("#pingResult").html(result);
             });
         }
