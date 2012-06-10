@@ -4,3 +4,10 @@ obj
 
 # mstest test results
 TestResults
+
+# all downloaded nuget packages, because we've package restore enabled
+packages
+
+# per-user project files
+*.suo
+*.user
