@@ -6,16 +6,13 @@
 
 <div id="body">
     <div>
-        MAC address: <input type="text" id="macAddress" value="" />
+        MAC address: <input type="text" id="macAddress" value="" /> <input type="button" id="wake" value="Send the Wake signal" /> 
     </div>
     <div>
-        IP address / host: <input type="text" id="ipAddress" value="" />
+        IP address / host: <input type="text" id="ipAddress" value="" /> <code id="pingResult"></code>
     </div>
-    <div>
-        Ping result: <code id="pingResult"></code>
-    </div>
-    <div>
-        <input type="button" id="wake" value="Wake this machine" /> 
+    <div>   
+        <input type="button" id="shutdown" value="Send the Shutdown signal" /> <code id="shutdownResult"></code>
     </div>     
   
     <ul>
@@ -37,13 +34,24 @@
             sendPing();
             $.interval(function () {
                 sendPing();
-            }, 3000);
+            }, 1000);
 
             var wakeButton = $("#wake");
             wakeButton.click(function() {
                 wakeButton.attr("disabled", "disabled");
                 $.getJSON("@Url.Action("Index", "Wake")", { id: $("#macAddress").val() }, function (result) {
                     wakeButton.removeAttr("disabled");
+                });
+            });
+
+            var shutdownButton = $("#shutdown");
+            var shutdownResultSpan = $("#shutdownResult");
+            shutdownButton.click(function() {
+                shutdownButton.attr("disabled", "disabled");
+                shutdownResultSpan.html("Shutting down ...");
+                $.getJSON("@Url.Action("Index", "Shutdown")", { id: $("#ipAddress").val() }, function (result) {
+                    shutdownButton.removeAttr("disabled");
+                    shutdownResultSpan.html(result);
                 });
             });
 
@@ -60,6 +68,9 @@
         }
 
         function loadPreconfiguredHost(ipAddress, macAddress) {
+            $("#pingResult").val("");
+            $("#shutdownResult").val("");
+
             $("#ipAddress").val(ipAddress);
             $("#macAddress").val(macAddress);
 

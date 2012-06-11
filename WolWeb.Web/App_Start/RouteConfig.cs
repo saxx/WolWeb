@@ -29,6 +29,12 @@ namespace WolWeb {
                 defaults: new { controller = "Wake", action = "Index", id = UrlParameter.Optional }
             );
 
+            routes.MapHttpRoute(
+                name: "Shutdown",
+                routeTemplate: "Shutdown/{id}",
+                defaults: new { controller = "Shutdown", action = "Index", id = UrlParameter.Optional }
+            );
+
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",

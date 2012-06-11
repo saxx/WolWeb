@@ -119,6 +119,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\ShutdownController.cs" />
     <Compile Include="ViewModel\PreconfiguredHostsViewModel.cs" />
     <Content Include="App_Data\Hosts.txt" />
     <Content Include="Content\Normalize.css" />
