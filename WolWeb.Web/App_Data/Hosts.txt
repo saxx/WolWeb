@@ -4,5 +4,9 @@
 # Hannes' Office Desktop
 EPTDTL40		| 10.2.1.175	| 00-24-7E-0E-23-0B
 
+# Michaels Office Desktop
+EPTDTL33    | 10.2.1.174  | 00-24-7E-0E-22-FE
+
 # Hannes' TV Server
 Media-Server	| Media			| 00-1A-4D-9D-74-E4
+
