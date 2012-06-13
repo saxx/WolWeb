@@ -13,3 +13,8 @@ footer {
     margin-top: 20px;
 }
 
+input[type=button] {
+    margin-left:0;
+    margin-right:0;
+}
+

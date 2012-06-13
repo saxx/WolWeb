@@ -5,6 +5,11 @@
 </header>
 
 <div id="body">
+    @if (User.Identity.IsAuthenticated) {
+        <div style="margin-bottom:20px;">
+            Hello, @User.Identity.Name!
+        </div>
+    }
     <div>
         MAC address: <input type="text" id="macAddress" value="" /> <input type="button" id="wake" value="Send the Wake signal" /> 
     </div>
