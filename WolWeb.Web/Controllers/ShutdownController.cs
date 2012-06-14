@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Web.Http;
+using Microsoft.Win32.SafeHandles;
 
 namespace WolWeb.Controllers {
     public class ShutdownController : ApiController {
@@ -11,8 +12,8 @@ namespace WolWeb.Controllers {
         [HttpGet]
         public string Index(string id) {
             try {
-                CreateProcessAsUser(@"c:\windows\system32\shutdown.exe", @" /s /t 0 /m " + id);
-                return "Success";
+                var exitCode = CreateProcessAsUser(@"c:\windows\system32\shutdown.exe", @" /s /t 0 /m " + id);
+                return "ExitCode: " + exitCode;
             }
             catch (Exception ex) {
                 return ex.Message;
@@ -21,9 +22,10 @@ namespace WolWeb.Controllers {
 
 
         //took most of the code from http://odetocode.com/Blogs/scott/archive/2004/10/29/createprocessasuser.aspx
-        private void CreateProcessAsUser(string executeable, string arguments) {
+        private uint CreateProcessAsUser(string executeable, string arguments) {
             IntPtr hToken = WindowsIdentity.GetCurrent().Token;
             IntPtr hDupedToken = IntPtr.Zero;
+
 
             ProcessUtility.PROCESS_INFORMATION pi = new ProcessUtility.PROCESS_INFORMATION();
 
@@ -40,13 +42,24 @@ namespace WolWeb.Controllers {
                 si.cb = Marshal.SizeOf(si);
                 si.lpDesktop = String.Empty;
 
+
                 result = ProcessUtility.CreateProcessAsUser(hDupedToken, executeable, arguments, ref sa, ref sa, false, 0, IntPtr.Zero, @"C:\", ref si, ref pi);
+
 
                 if (!result) {
                     var error = Marshal.GetLastWin32Error();
                     var message = String.Format("Error: {0}", error);
                     throw new ApplicationException(message);
                 }
+
+                // Successfully created the process. Wait for it to finish.
+                ProcessUtility.WaitForSingleObject(pi.hProcess, 10000);
+
+                // Get the exit code.
+                uint exitCode;
+                ProcessUtility.GetExitCodeProcess(pi.hProcess, out exitCode);
+
+                return exitCode;
             }
             finally {
                 if (pi.hProcess != IntPtr.Zero)
@@ -128,6 +141,15 @@ namespace WolWeb.Controllers {
                                 ref SECURITY_ATTRIBUTES lpThreadAttributes,
                                 Int32 ImpersonationLevel, Int32 dwTokenType,
                                 ref IntPtr phNewToken);
+
+
+
+[DllImport("kernel32.dll", SetLastError = true)]
+[return: MarshalAs(UnmanagedType.Bool)]
+public static extern bool GetExitCodeProcess(IntPtr hProcess, out uint lpExitCode);
+
+            [DllImport("kernel32.dll", SetLastError=true)]
+  public static extern UInt32 WaitForSingleObject(IntPtr hHandle, UInt32 dwMilliseconds);
         }
 
 
