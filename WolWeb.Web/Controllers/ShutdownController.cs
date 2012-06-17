@@ -15,7 +15,7 @@ namespace WolWeb.Controllers {
 
         [HttpGet]
         public string Index(string id) {
-            return RunProcess(id, "/s");
+            return RunProcess(id, "/s /t 0");
         }
 
 
@@ -46,7 +46,7 @@ namespace WolWeb.Controllers {
 
                 uint exitCode;
                 try {
-                    ret = CreateProcessAsUser(dupedToken, null, @"c:\windows\system32\shutdown.exe " + command + " /t 0 /m " + id, ref sa, ref sa, false, 0, (IntPtr)0, "c:\\", ref si, out pi);
+                    ret = CreateProcessAsUser(dupedToken, null, @"c:\windows\system32\shutdown.exe " + command + " /m " + id, ref sa, ref sa, false, 0, (IntPtr)0, "c:\\", ref si, out pi);
 
                     if (ret == false)
                         throw new Exception("CreateProcessAsUser failed (" + Marshal.GetLastWin32Error() + ")");
