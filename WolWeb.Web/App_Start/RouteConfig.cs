@@ -12,12 +12,6 @@ namespace WolWeb {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
-            );
-
-            routes.MapHttpRoute(
                 name: "Ping",
                 routeTemplate: "Ping/{id}",
                 defaults: new { controller = "Ping", action = "Index", id = UrlParameter.Optional }
@@ -31,7 +25,7 @@ namespace WolWeb {
 
             routes.MapHttpRoute(
                 name: "Shutdown",
-                routeTemplate: "Shutdown/{id}",
+                routeTemplate: "Shutdown/{action}/{id}",
                 defaults: new { controller = "Shutdown", action = "Index", id = UrlParameter.Optional }
             );
 

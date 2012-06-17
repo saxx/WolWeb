@@ -9,7 +9,7 @@ namespace WolWeb.Controllers {
 
         [HttpGet]
         public string Restart(string id) {
-            return RunProcess(id, "/r");
+            return RunProcess(id, "/r /t 0");
         }
 
 
