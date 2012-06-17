@@ -1,11 +1,14 @@
 ﻿using System.Web.Mvc;
-using WolWeb.ViewModel;
+using WolWeb.ViewModels.Home;
+using WolWeb;
 
 namespace WolWeb.Controllers {
+
+    [AuthorizeRemoteOnly]
     public class HomeController : Controller {
 
         public ActionResult Index() {
-            var model = new PreconfiguredHostsViewModel(Server.MapPath("~/App_Data/Hosts.txt"));
+            var model = new IndexViewModel(User.Identity,  Server.MapPath("~/App_Data/Hosts.txt"));
             return View(model);
         }
 

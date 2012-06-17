@@ -1,30 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Web.Http;
 
 namespace WolWeb.Controllers {
+    [AuthorizeRemoteOnly]
     public class PingController : ApiController {
 
         [HttpGet]
-        public string Index(string id) {
+        public PingResult Index(string id) {
             var pinger = new Ping();
             try {
                 var result = pinger.Send(id);
 
                 if (result.Status == IPStatus.Success)
-                    return "Up and running (" + result.RoundtripTime + "ms)";
-
-                return result.Status.ToString();
+                    return new PingResult("Ok (" + result.RoundtripTime + "ms)", true);
+                return new PingResult("Failed (" + result.Status.ToString() + ")", false);
             }
             catch (Exception ex) {
                 if (ex.InnerException != null)
-                    return ex.InnerException.Message;
-                return ex.Message;
+                    return new PingResult("Failed (" + ex.InnerException.Message + ")", false);
+                return new PingResult("Failed (" + ex.Message + ")", false);
             }
+        }
+
+        public class PingResult {
+            public PingResult(string message, bool status) {
+                Message = message;
+                Status = status;
+            }
+            public string Message { get; set; }
+            public bool Status { get; set; }
         }
 
     }

@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Threading;
 using System.Web.Http;
 
 namespace WolWeb.Controllers {
+    [AuthorizeRemoteOnly]
     public class WakeController : ApiController {
 
         [HttpGet]
-        public bool Index(string id) {
+        public string Index(string id) {
             try {
                 // Convert MAC address to Hex bytes
                 var value = long.Parse(id.Replace("-", "").Replace(":", ""), NumberStyles.HexNumber, CultureInfo.CurrentCulture.NumberFormat);
@@ -38,10 +35,10 @@ namespace WolWeb.Controllers {
                 client.Connect(IPAddress.Broadcast, 7); //the port doesn't matter
                 client.Send(packet.ToArray(), packet.Count);
 
-                return true;
+                return "";
             }
-            catch {
-                return false;
+            catch (Exception ex) {
+                return ex.Message;
             }
         }
 

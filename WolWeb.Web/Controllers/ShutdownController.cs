@@ -4,11 +4,22 @@ using System.Security.Principal;
 using System.Web.Http;
 
 namespace WolWeb.Controllers {
+    [AuthorizeRemoteOnly]
     public class ShutdownController : ApiController {
 
         [HttpGet]
-        public string Index(string id) {
+        public string Restart(string id) {
+            return RunProcess(id, "/r");
+        }
 
+
+        [HttpGet]
+        public string Index(string id) {
+            return RunProcess(id, "/s");
+        }
+
+
+        private string RunProcess(string id, string command) {
             try {
                 IntPtr dupedToken = new IntPtr(0);
 
@@ -26,7 +37,7 @@ namespace WolWeb.Controllers {
 
                 var ret = DuplicateTokenEx(token, GENERIC_ALL, ref sa, SecurityImpersonation, TokenType, ref dupedToken);
                 if (ret == false)
-                    throw new Exception("DuplicateTokenEx failed with " + Marshal.GetLastWin32Error());
+                    throw new Exception("DuplicateTokenEx failed (" + Marshal.GetLastWin32Error() + ")");
 
                 STARTUPINFO si = new STARTUPINFO();
                 si.cb = Marshal.SizeOf(si);
@@ -35,10 +46,10 @@ namespace WolWeb.Controllers {
 
                 uint exitCode;
                 try {
-                    ret = CreateProcessAsUser(dupedToken, null, @"c:\windows\system32\shutdown.exe /s /t 0 /m " + id, ref sa, ref sa, false, 0, (IntPtr)0, "c:\\", ref si, out pi);
+                    ret = CreateProcessAsUser(dupedToken, null, @"c:\windows\system32\shutdown.exe " + command + " /t 0 /m " + id, ref sa, ref sa, false, 0, (IntPtr)0, "c:\\", ref si, out pi);
 
                     if (ret == false)
-                        throw new Exception("CreateProcessAsUser failed with " + Marshal.GetLastWin32Error());
+                        throw new Exception("CreateProcessAsUser failed (" + Marshal.GetLastWin32Error() + ")");
 
                     WaitForSingleObject(pi.hProcess, 10000);
                     GetExitCodeProcess(pi.hProcess, out exitCode);
@@ -53,13 +64,14 @@ namespace WolWeb.Controllers {
                 }
 
                 if (exitCode == 0)
-                    return "Success";
-                return "Failed. Exitcode: " + exitCode;
+                    return "";
+                return "Exit code: " + exitCode;
             }
             catch (Exception ex) {
                 return ex.Message;
             }
         }
+
 
 
         //took most of the code from http://support.microsoft.com/kb/889251/en-us?fr=1

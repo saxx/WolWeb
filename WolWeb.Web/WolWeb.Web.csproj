@@ -116,11 +116,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Code\AuthorizeRemoteOnlyAttribute.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\ShutdownController.cs" />
-    <Compile Include="ViewModel\PreconfiguredHostsViewModel.cs" />
+    <Compile Include="ViewModels\Home\IndexViewModel.cs" />
     <Content Include="App_Data\Hosts.txt" />
     <Content Include="Content\Normalize.css" />
     <Compile Include="Controllers\WakeController.cs" />

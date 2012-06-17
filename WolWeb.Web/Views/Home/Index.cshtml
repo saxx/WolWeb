@@ -1,90 +1,131 @@
-﻿@model WolWeb.ViewModel.PreconfiguredHostsViewModel
+﻿@model WolWeb.ViewModels.Home.IndexViewModel
 
 <header>
+    @if (!string.IsNullOrEmpty(Model.UserName)) {
+        <span>Hello, @Model.UserName</span>
+    }
     Wake-on-LAN Web
 </header>
 
 <div id="body">
-    @if (User.Identity.IsAuthenticated) {
-        <div style="margin-bottom:20px;">
-            Hello, @User.Identity.Name!
-        </div>
-    }
-    <div>
-        MAC address: <input type="text" id="macAddress" value="" /> <input type="button" id="wake" value="Send the Wake signal" /> 
-    </div>
-    <div>
-        IP address / host: <input type="text" id="ipAddress" value="" /> <code id="pingResult"></code>
-    </div>
-    <div>   
-        <input type="button" id="shutdown" value="Send the Shutdown signal" /> <code id="shutdownResult"></code>
-    </div>     
-  
-    <ul>
-        @foreach(var host in Model.PreconfiguredHosts) {
-        <li><a href="javascript:loadPreconfiguredHost('@host.IpAddress', '@host.MacAddress');">@host.Name</a></li>
+    <table>
+        <tr>
+            <th>Host</th>
+            <th>IP address</th>
+            <th>MAC address</th>
+            <th>Ping result</th>
+            <th>Actions</th>
+        </tr>
+        @{var count = 0;}
+        @foreach (var host in Model.PreconfiguredHosts) {
+            <tr class="@(count++ % 2 == 1 ? "alternate" : "")">
+                <td class="hostName">@host.Name</td>
+                <td class="ipAddress">@host.IpAddress</td>
+                <td class="macAddress">@host.MacAddress</td>
+                <td class="pingResult"></td>
+                <td>
+                    <input type="button" class="wakeButton" value="Wake Up" disabled="disabled" />
+                    <input type="button" class="shutdownButton" value="Shutdown" disabled="disabled" />
+                    <input type="button" class="restartButton" value="Restart" disabled="disabled" />
+                </td>
+            </tr>
         }
-    </ul>
+    </table>
+  
 </div>
 
 <footer>
-    &copy by Hannes Sachsenhofer (built at @(new FileInfo(typeof(WolWeb.WebApiApplication).Assembly.Location).LastWriteTimeUtc) UTC)
+    &copy by Hannes Sachsenhofer (built at @Model.CompilationTime.ToUniversalTime().ToString() UTC)
 </footer>
 
 @section scripts {
     <script>
+
+        var pingUrl = '@Url.Action("Index", "Ping")';
+        var wakeUrl = '@Url.Action("Index", "Wake")';
+        var shutdownUrl = '@Url.Action("Index", "Shutdown")';
+        var restartUrl = '@Url.Action("Restart", "Shutdown")';
+
         $(document).ready(function () {
-
-            var pingResultSpan = $("#pingResult");
-            sendPing();
+            sendPings();
             $.interval(function () {
-                sendPing();
-            }, 1000);
+                sendPings();
+            }, 3000);
 
-            var wakeButton = $("#wake");
-            wakeButton.click(function() {
-                wakeButton.attr("disabled", "disabled");
-                $.getJSON("@Url.Action("Index", "Wake")", { id: $("#macAddress").val() }, function (result) {
-                    wakeButton.removeAttr("disabled");
+            $(".wakeButton").each(function (i, val) {
+                var wakeButton = $(val);
+
+                wakeButton.click(function () {
+                    wakeButton.attr("disabled", true);
+
+                    var macAddress = wakeButton.parent().parent().find(".macAddress").html();
+                    $.getJSON(wakeUrl, { id: macAddress }, function (result) {
+                        if (result && result != "")
+                            alert("Failed: " + result);
+                        wakeButton.attr("disabled", false);
+                    });
                 });
             });
 
-            var shutdownButton = $("#shutdown");
-            var shutdownResultSpan = $("#shutdownResult");
-            shutdownButton.click(function() {
-                shutdownButton.attr("disabled", "disabled");
-                shutdownResultSpan.html("Shutting down ...");
-                $.getJSON("@Url.Action("Index", "Shutdown")", { id: $("#ipAddress").val() }, function (result) {
-                    shutdownButton.removeAttr("disabled");
-                    shutdownResultSpan.html(result);
+
+            $(".shutdownButton").each(function (i, val) {
+                var shutdownButton = $(val);
+
+                shutdownButton.click(function () {
+                    shutdownButton.attr("disabled", true);
+
+                    var ipAddress = shutdownButton.parent().parent().find(".ipAddress").html();
+                    $.getJSON(shutdownUrl, { id: ipAddress }, function (result) {
+                        if (result && result != "")
+                            alert("Failed: " + result);
+                        shutdownButton.attr("disabled", false);
+                    });
                 });
             });
 
+
+            $(".restartButton").each(function (i, val) {
+                var restartButton = $(val);
+
+                restartButton.click(function () {
+                    restartButton.attr("disabled", true);
+
+                    var ipAddress = restartButton.parent().parent().find(".ipAddress").html();
+                    $.getJSON(restartUrl, { id: ipAddress }, function (result) {
+                        if (result && result != "")
+                            alert("Failed: " + result);
+                        restartButton.attr("disabled", false);
+                    });
+                });
+            });
         });
 
-        function sendPing() {
-            var ipAddress = $("#ipAddress").val();
+        function sendPings() {
+            $(".pingResult").each(function(i, val) {
+                var pingResult = $(val);
 
-            if (ipAddress && ipAddress != "") {
-                $.getJSON("@Url.Action("Index", "Ping")", { id: ipAddress }, function (result) {
-                    $("#pingResult").html(result);
-                });
-            }
+                var ipAddress = pingResult.parent().find(".ipAddress").html();
+                if (ipAddress && ipAddress != "") {
+                    $.getJSON(pingUrl, { id: ipAddress }, function (result) {
+                        pingResult.html(result.Message);
+
+                        if (result.Status) {
+                            pingResult.parent().find(".wakeButton").attr("disabled", true);
+                            pingResult.parent().find(".shutdownButton").attr("disabled", false);
+                            pingResult.parent().find(".restartButton").attr("disabled", false);
+                        }
+                        else {
+                            pingResult.parent().find(".wakeButton").attr("disabled", false);
+                            pingResult.parent().find(".shutdownButton").attr("disabled", true);
+                            pingResult.parent().find(".restartButton").attr("disabled", true);
+                        }
+
+                    });
+                }
+
+            });
         }
 
-        function loadPreconfiguredHost(ipAddress, macAddress) {
-            $("#pingResult").val("");
-            $("#shutdownResult").val("");
-
-            $("#ipAddress").val(ipAddress);
-            $("#macAddress").val(macAddress);
-
-            sendPing();
-        }
     </script>
 }
-
-<!-- 
-    00-24-7E-0E-23-0B / 10.2.1.175 
--->
 

@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Principal;
 
-namespace WolWeb.ViewModel {
-    public class PreconfiguredHostsViewModel {
+namespace WolWeb.ViewModels.Home {
+    public class IndexViewModel {
 
-        public PreconfiguredHostsViewModel(string pathToFile) {
+        public IndexViewModel(IIdentity identity, string pathToFile) {
             var hosts = new List<PreconfiguredHost>();
 
             foreach (var line in File.ReadAllLines(pathToFile).Select(x => x.Trim()).Where(x => !x.StartsWith("#"))) {
@@ -19,10 +21,15 @@ namespace WolWeb.ViewModel {
                 }
             }
 
-            PreconfiguredHosts = hosts;
+            PreconfiguredHosts = hosts.OrderBy(x=>x.Name);
+
+            CompilationTime = new FileInfo(typeof(WolWeb.WebApiApplication).Assembly.Location).LastWriteTimeUtc;
+            UserName=identity.Name;
         }
 
         public IEnumerable<PreconfiguredHost> PreconfiguredHosts { get; set; }
+        public DateTime CompilationTime { get; set; }
+        public string UserName { get; set; }
 
         public class PreconfiguredHost {
             public string Name { get; set; }

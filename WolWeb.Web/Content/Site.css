@@ -1,4 +1,5 @@
-﻿html { }
+﻿html {
+}
 
 body {
     font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
@@ -7,14 +8,33 @@ body {
 header {
     font-weight: bold;
     margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid black;
 }
+    header > span {
+        float: right;
+    }
+
+
 footer {
     font-style: italic;
     margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid black;
+    text-align: right;
+}
+
+
+td { margin:0; padding:1px 5px 1px 5px; }
+tr.alternate {
+    background-color:#eeeeee;
 }
 
 input[type=button] {
-    margin-left:0;
-    margin-right:0;
+    margin-left: 0;
+    margin-right: 0;
 }
 
+.hostName, .ipAddress, .macAddress, .pingResult {
+    font-family: monospace;
+}
