@@ -11,3 +11,4 @@ packages
 # per-user project files
 *.suo
 *.user
+_Resharper*
